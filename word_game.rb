@@ -2,7 +2,7 @@
 
 #Proposed game flow - 
 #*Choose random letters with a third of them being vowels and store them in a hash
-#*Store letters in a hash as letter => frequency
+#*Store letters in a list (game is small enough to use list and avoid hash overhead)
 #*Display set for user
 #*Accept words from user
 #*Check for validity
@@ -14,6 +14,20 @@ LETTERS_SCORE = #letter => score value
 
 CONSONANTS = 'bcdfghjklmnpqrstvwxyz'.split('')
 VOWELS = 'aeiou'.split('')
+
+LETTER_SCORE = {'a'=>1, 'j'=>8, 's'=>1,'b'=>3, 'k'=>5, 't'=>1, 'c'=>3, 'l'=>1, 'u'=>1, 'd'=>2, 'm'=>3, 'v'=>4, 'e'=>1, 
+				'n'=>1, 'w'=>4, 'f'=>4, 'o'=>1, 'x'=>8, 'g'=>2, 'p'=>3, 'y'=>4, 'h'=>4, 'q'=>10, 'z'=>10, 'i'=>1, 'r'=>1}
+
+def load_words(filename)
+	puts 'Loading wordlist...'
+	wordlist = {}
+	file = open(filename, mode = 'r')
+	file.each do |line|
+		wordlist[line.chomp] = 1
+	end
+	puts 'Word list loaded successfully!'
+	wordlist
+end
 
 #TODO - add frequency with weighting for letters
 def generate_letter_set(num_letters)
@@ -28,9 +42,9 @@ def generate_letter_set(num_letters)
 	return letter_set.sort
 end
 
-#TODO
-def is_word_valid?(word)
-	true
+def is_word_valid?(word, wordlist)
+	return true if wordlist.include? word
+	false
 end
 
 def are_letters_available?(letter_set, word)
@@ -40,14 +54,29 @@ def are_letters_available?(letter_set, word)
 	true
 end
 
+def score_word(word)
+	score = 0
+	word.split('').each do |letter|
+		score += LETTER_SCORE[letter]
+	end
+	score
+end
+
 def play_game
+	wordlist = load_words('words.txt')
 	num_letters = 10
 	letter_set = generate_letter_set(num_letters)
+	puts 'Welcome to Word Game! Press . anytime to exit.'
+	total_score = 0
 	while letter_set.length > 0
-		puts "Available letters: ", letter_set.join('')
+		puts "Available letters: ", letter_set.join(' ')
 		puts "Enter a valid word: "
 		word = gets.chomp
-		unless is_word_valid?(word)
+		if word == '.'
+			puts 'Thank you for playing Boggle! Goodbye!'
+			break
+		end
+		unless is_word_valid?(word, wordlist)
 			puts "#{word} is not a valid word!"
 			next
 		end
@@ -55,14 +84,18 @@ def play_game
 			puts "Only use available letters!"
 			next
 		end 
-		#check if word is valid
-		# check if all letters are available enough times
 		for i in 0...word.length
 			letter_index = letter_set.index(word[i])
 			#print letter_index
-			letter_set.delete_at(letter_index)
+			letter_set.delete_at letter_index
 		end
+		word_score = score_word(word)
+		total_score += word_score if word_score
+		puts "You scored #{word_score} points for #{word}"
+		puts "Your total score is #{total_score}"
+		puts ''
 	end
+	puts 'Thank you for playing Boggle! Goodbye!'
 end
 
 
