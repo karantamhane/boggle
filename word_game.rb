@@ -81,18 +81,19 @@ end
 
 
 def play_game
+	puts 'Welcome to Boggle! Press . anytime to exit.'
 	wordlist = load_words('words.txt')
 	puts
-	puts "How many letters do you wish to have in your lette set?"
+	puts "How many letters do you wish to have in your letter set?"
 	num_letters = gets.chomp.to_i
 	letter_set = generate_letter_set(num_letters)
-	puts 'Welcome to Boggle! Press . anytime to exit.'
 	puts
 	total_score = 0
 	while letter_set.length > 0
 		puts "Available letters: ", letter_set.join(' ')
-		puts "Enter a valid word: "
+		print "Enter a valid word: "
 		word = gets.chomp
+		puts
 		if word == '.'
 			puts 'Thank you for playing Boggle! Goodbye!'
 			break
