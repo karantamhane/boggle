@@ -82,7 +82,9 @@ end
 
 def play_game
 	wordlist = load_words('words.txt')
-	num_letters = 10
+	puts
+	puts "How many letters do you wish to have in your lette set?"
+	num_letters = gets.chomp.to_i
 	letter_set = generate_letter_set(num_letters)
 	puts 'Welcome to Boggle! Press . anytime to exit.'
 	puts
