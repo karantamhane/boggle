@@ -1,69 +1,75 @@
 #Implements Boggle!
 
-# take in 'n' to decide size of board
-# generate set of nxn letters (word_game)
-# write class to wrap letters in objects
-# use graph to represent board of objects
-# display board
-# take in word
-# verify if letters present in board (word_game)
-# verify if path exists in board (here)
-# verify if word is valid (word_game)
-# score word (word_game)
-# store scored words to avoid rescoring
-
 # TIPS
 # Possible way to check for word board path --> precompute all possible words in board and just lookup every time
 # Graph search - avoid cycles
-
-#TODO - change play_game to cancel all print msgs
-#TODO - change word_game's play_game method so it doesn't delete used letters
 require File.expand_path('word_game_for_boggle.rb')
 
-print 'Enter size of Boggle board required: '
-board_size = gets.chomp
-puts
-
 class Letter
-	@@row = 0
-	@@column = 0
-	def initialize(letter)
+	def initialize(letter, row, column)
 		@letter = letter
-		@neighbors = []
-		if @@column == board_size
-			@@row += 1
-			@@column = 0
+		@row = row
+		@column = column
+	end
+	attr_accessor :letter, :row, :column
+end
+
+def make_letter_graph(letter_set, board_size)
+	graph = {}
+	for i in 0...letter_set.length
+		letter_obj = Letter.new(letter_set[i], i/board_size, i%board_size)
+		graph[letter_obj] = []
+		for neighbor in graph.keys
+			if (neighbor.column == letter_obj.column-1 && neighbor.row == letter_obj.row) || (neighbor.column == letter_obj.column-1 && neighbor.row == letter_obj.row-1) || (neighbor.column == letter_obj.column && neighbor.row == letter_obj.row-1) || (neighbor.column == letter_obj.column+1 && neighbor.row == letter_obj.row+1)
+
+				graph[neighbor] << letter_obj
+				graph[letter_obj] << neighbor
+			end
+		end
+	end
+	graph
+end
+
+def display_board(letter_set, board_size)
+	for i in 0...board_size*board_size
+		if (i+1)%board_size == 0
+			puts letter_set[i]
+			puts
 		else
-			@@column += 1
-		end
-		@row = @@row
-		@column = @@column
-	end
-	attr_accessor :letter, :neighbors, :row, :column
-end
-
-class LetterGraph
-	def initialize(letter_set)
-		@letter_set = letter_set
-		@letter_obj_set = []
-	end
-#Generate graph of Letters
-	def make_letter_obj_list
-		@letter_set.each do |letter|
-			letter_obj = Letter.new
-			letter_obj.letter = letter
-			@letter_obj_set << letter_obj
+			print letter_set[i],' '
 		end
 	end
-
 end
 
-def display_board
-end
-
-def create_boggle_board(board_size)
+def play_boggle
+	wordlist = load_words('words.txt')
+	word_score = total_score = 0
+	puts
+	print 'Enter size of Boggle board required: '
+	board_size = gets.chomp.to_i
 	letter_set = generate_letter_set(board_size*board_size)
-	letter_graph = LetterGraph(letter_set).new
+	letter_graph =make_letter_graph(letter_set, board_size)
+	while true
+		display_board(letter_set, board_size)
+		print 'Enter a valid word: '
+		word = gets.chomp
+		puts
+		break if word == '.'
+		unless is_word_valid?(word, wordlist)
+			puts "#{word} is not a valid word!"
+			next
+		end
+		unless are_letters_available?(letter_set, word)
+			puts 'Only use available letters!'
+			next
+		end
+		#TODO - Check if word path exists on board
+		word_score = score_word(word)
+		total_score += word_score if word_score
+		puts "You scored #{word_score} points for #{word}."
+		puts "Your total score is #{total_score}."
+		puts
+	end
+	puts 'Thank you for playing Boggle. Goodbye!'
 end
-
 
