@@ -14,7 +14,7 @@ class Letter
 	attr_accessor :letter, :row, :column
 end
 
-def make_letter_graph(letter_set, board_size)
+def make_boggle_board(letter_set, board_size)
 	graph = {}
 	for i in 0...letter_set.length
 		letter_obj = Letter.new(letter_set[i], i/board_size, i%board_size)
@@ -41,6 +41,10 @@ def display_board(letter_set, board_size)
 	end
 end
 
+def word_path_valid_on_board?(word, board)
+	true
+end
+
 def play_boggle
 	wordlist = load_words('words.txt')
 	word_score = total_score = 0
@@ -48,7 +52,7 @@ def play_boggle
 	print 'Enter size of Boggle board required: '
 	board_size = gets.chomp.to_i
 	letter_set = generate_letter_set(board_size*board_size)
-	letter_graph =make_letter_graph(letter_set, board_size)
+	board = make_boggle_board(letter_set, board_size)
 	while true
 		display_board(letter_set, board_size)
 		print 'Enter a valid word: '
@@ -61,6 +65,10 @@ def play_boggle
 		end
 		unless are_letters_available?(letter_set, word)
 			puts 'Only use available letters!'
+			next
+		end
+		unless word_path_valid_on_board?(word, board)
+			puts "A word is valid only if it traces a pattern on the current board! Please try again."
 			next
 		end
 		#TODO - Check if word path exists on board
