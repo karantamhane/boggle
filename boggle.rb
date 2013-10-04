@@ -76,7 +76,7 @@ def word_path_valid_on_board?(word, board)
 		first_letter = first_letter_list[first_letter_list_index]
 		first_letter.visited = true
 		while word_letter_index < word.length
-			puts first_letter.letter
+			#puts first_letter.letter
 			if first_letter.up && first_letter.up[0] == word[word_letter_index] && first_letter.up[1].visited == false
 				first_letter = first_letter.up[1]
 			elsif first_letter.down && first_letter.down[0] == word[word_letter_index] && first_letter.down[1].visited == false
@@ -95,7 +95,7 @@ def word_path_valid_on_board?(word, board)
 				first_letter = first_letter.rdown[1]
 			else
 				letter_found = false
-				puts 'letter not found!'
+				#puts 'letter not found!'
 				break
 			end
 			first_letter.visited = true
