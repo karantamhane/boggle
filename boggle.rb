@@ -102,6 +102,7 @@ def play_boggle
 	end
 	letter_set = generate_letter_set(board_size*board_size) #['t','n','w', 'p','e','r','g','e','g']
 	board = make_boggle_board(letter_set, board_size)
+	scored_words = {}
 	while true
 		display_board(letter_set, board_size)
 		print 'Enter a valid word: '
@@ -120,11 +121,17 @@ def play_boggle
 			puts "A word is valid only if it traces a pattern on the current board! Please try again."
 			next
 		end
-		word_score = score_word(word)
-		total_score += word_score if word_score
-		puts "You scored #{word_score} points for #{word}."
-		puts "Your total score is #{total_score}."
-		puts
+		if scored_words.has_key? word
+			puts "#{word} has already been entered! Please try again."
+			next
+		else
+			word_score = score_word(word)
+			scored_words[word] = 1
+			total_score += word_score if word_score
+			puts "You scored #{word_score} points for #{word}."
+			puts "Your total score is #{total_score}."
+			puts
+		end
 	end
 	puts 'Thank you for playing Boggle. Goodbye!'
 end
