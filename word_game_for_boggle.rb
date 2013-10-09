@@ -53,8 +53,7 @@ end
 
 
 def is_word_valid?(word, wordlist)
-	return true if wordlist.include? word
-	false
+	wordlist.include? word
 end
 
 
