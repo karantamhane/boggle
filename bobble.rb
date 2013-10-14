@@ -154,7 +154,7 @@ end
 def get_board_size
 	print 'To create an N X N Boggle board, enter N: '
 	board_size = gets.chomp.to_i
-	until board_size.kind_of?(Integer) && board_size > 0 && board_size < 10
+	until board_size.kind_of?(Integer) && board_size > 0 && board_size <= 10
 		print 'Please enter an integer between 1 and 10! '
 		board_size = gets.chomp.to_i
 		puts
