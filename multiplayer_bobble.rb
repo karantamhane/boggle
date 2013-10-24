@@ -152,10 +152,10 @@ class Board
 end
 
 def get_board_size
-	print 'To create an N X N Boggle board, enter N: '
+	print 'To create an N X N Boggle board, enter N (1 to 10): '
 	board_size = gets.chomp.to_i
-	until board_size.kind_of?(Integer) && board_size > 0 && board_size <= 10
-		print 'Please enter an integer between 1 and 10! '
+	until board_size.kind_of?(Integer) && board_size > 2 && board_size <= 10
+		print 'Please enter an integer between 3 and 10! '
 		board_size = gets.chomp.to_i
 		puts
 	end
