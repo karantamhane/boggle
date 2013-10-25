@@ -4,9 +4,9 @@ require_relative 'bobble.rb'
 
 
 
-def play_bobble
+def play_bobble_single
   #create connection
-  client = TCPSocket.new('10.0.1.76', 45678)
+  client = TCPSocket.new('localhost', 45679)
   puts
   board_size = get_board_size #get user input for board size
   client.write board_size #send board size to server
@@ -35,4 +35,4 @@ def play_bobble
   client.close  #close connection
 end
 
-play_bobble
+#play_bobble

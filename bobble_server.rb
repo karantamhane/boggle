@@ -3,9 +3,9 @@ require 'json'
 require_relative 'bobble.rb'
 
 
-def start_server
+def start_server_single#
   #create server socket
-  server = TCPServer.new('0.0.0.0', 45678)
+  server = TCPServer.new('0.0.0.0', 45679)
   
   loop do |c = server.accept| #create accept loop for server
     #puts 'connection accepted'
@@ -62,4 +62,4 @@ def start_server
   end    
 end
 
-start_server
+#start_server

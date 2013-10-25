@@ -1,19 +1,20 @@
 require 'socket'
 require 'json'
 require_relative 'multiplayer_bobble.rb'
+require_relative 'bobble_server.rb'
 
 class Game
   @@games = []
+  attr_accessor :players, :letter_set, :board, :game_active, :max_score, :duration, :winner
   def initialize(letter_set, board)
+    @game_active = true
     @players = []
     @@games << self
     @board = board
     @letter_set = letter_set
-  end
-  attr_accessor :players, :letter_set, :board
-
-  def self.games_in_progress
-    @@games
+    @max_score = 0
+    @duration = 120
+    @winner = nil
   end
 
   def self.last_game_started
@@ -34,59 +35,80 @@ class Game
 end
 
 class Player
+  attr_accessor :name, :score, :word_score, :thread, :active
   #keep track of IPs and communicate to other players?
-  def initialize
-    puts 'new player created'
+  def initialize(name, connection, thread)
+    @name = name
+    @word_score = 0
+    @score = 0
+    @connection = connection
+    @thread = thread
+    @active = true
   end
 end
 
-def start_server
-  #create server socket
-  server = TCPServer.new('0.0.0.0', 45678)
-  
-  #keep track of game state in server
+def select_server
+  select_server = TCPServer.new('0.0.0.0', 45677)
+  puts 'select server up'
+  loop do |conn = select_server.accept|
+    select = conn.readpartial(64).chomp
+    conn.close
+    if select == 'no'
+      puts 'single server up'
+      Thread.start { start_server_single }
+    else
+      Thread.start { start_server_multi }
+    end
+  end
+end
 
-  loop do |c = server.accept| #create accept loop for server
-    #puts 'connection accepted'
-    Thread.start(c) do |conn| #create thread for each game
-      #puts 'thread started'
-      if !Game.is_game_in_progress? || Game.last_game_started.player_limit_exceeded?        
-        conn.write true
-        #puts 'true'
+
+def start_server_multi
+  #create server socket
+  
+  server = TCPServer.new('0.0.0.0', 45678)
+  #puts 'multi server up'
+  #ask for single player or multiplayer
+
+  #Have your own protocols for message chunks (newline delimited)
+
+  loop do #create accept loop for server
+    c = server.accept
+    thread = Thread.start(c) do |conn| #create thread for each game
+      name = conn.readpartial(64).chomp #get player name
+      player = Player.new(name, conn, Thread.current)
+      #player.pry
+      #puts "Thread for #{player.name}"
+      
+      #TODO - In multiplayer game, wait till all players join before displaying board
+      if !Game.is_game_in_progress? || !Game.last_game_started.game_active || Game.last_game_started.player_limit_exceeded?        
+        conn.write true #send check for game_in_progress?
         board_size = conn.readpartial(64).to_i #get board size from client
         letter_set = generate_letter_set board_size*board_size #generate letter set
-          
         board = Board.new(letter_set, board_size) #create board object for current game
-
         game = Game.new(letter_set, board) #create game and add player
-        player = Player.new
         game.add_player(player)
-      #puts 'board created'
         puts
       else
         game = Game.last_game_started
-        #puts 'last game', game
-        player = Player.new
-        #puts 'created player'
-        game.add_player(player)
-        #puts 'added player'
-        #puts game.board.board_size
+        puts game.board.board_size
+        game.add_player(player) 
         conn.write game.board.board_size
-        #puts 'false'
         letter_set = game.letter_set
         #print 'letter_set', letter_set
       end
-      wordlist = load_words('words.txt') #load wordlist
-      #puts 'wordlist loaded'
-      conn.write letter_set.to_json #pass letter set to client      
 
-      total_score = 0
-      word_score = 0
+      wordlist = load_words('words.txt') #load wordlist
+      conn.write letter_set.to_json #pass letter set to client
+
+
       while true #perform game computations
+        #puts "Game active? = #{game.game_active}"
         #puts 'inside loop, before reading word'
         word = conn.readpartial(256).chomp
+        puts word
         #puts "read #{word}"
-        break if word == '.'
+        break if word == '.' || !game.game_active
         #puts 'word received', word
         unless is_word_valid?(word, wordlist)
           conn.write "#{word} is not a valid word!"
@@ -111,19 +133,61 @@ def start_server
           conn.write "#{word} has already been entered! Please try again."
           next
         else
-          word_score = score_word(word)
+          player.word_score = score_word(word)
+          #puts player.word_score
           game.board.scored_words[word] = 1
-          total_score += word_score if word_score
-          conn.write "You scored #{word_score} points for #{word}. Your total score is #{total_score}."
+          player.score += player.word_score if player.word_score
+          conn.write "You scored #{player.word_score} points for #{word}. Your total score is #{player.score}."
         end
       end
-      #puts 'while ended'
+
+      game.players.each do |p|
+        if p.score > game.max_score
+          game.winner = p
+          game.max_score = p.score
+        end
+      end
+
+      #puts 'while loop ended'
+      game.game_active = false if game.game_active && word == '.'
+      #puts "game_active = #{game.game_active}"
+      #set all players inactive thru a method
+      #use read and write
+      player.active = false if !game.game_active
+      #puts "player.active = #{player.active}"
+
+      #puts "game active #{game.game_active}"
+      #puts "player active #{player.active}"
+
+      game.players.each do |plyr|
+        if plyr.active
+          #puts "#{player.name}'s thread => #{player.thread}"
+          plyr.thread.join
+        end
+      end
+
+      #puts "We went through #{player.name} and are ready to end"
+
+      # conn.write "The game has ended"
+      if !player.active
+        game.players.delete(player)
+        Game.games.delete(game) if game.players == []
+        conn.close
+      end
+      #break #Breaks you out of thread loop & kills it
+
+      conn.write "#{winner.name} wins with a score of #{winner.score} points!" if winner
+      conn.close
     end
-  end    
+    #thread ends
+  end
+  #server loop ends
+
 end
+#start_server ends
 
-start_server
-
+#start_server
+select_server
 
 
 
