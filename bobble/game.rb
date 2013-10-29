@@ -91,7 +91,7 @@ class Game
   attr_accessor :board, :duration
   def initialize(board_size)
     @board = Board.new(board_size)
-    @duration = 10
+    @duration = 20*(board_size - 1)
   end
 
   def is_word_valid?(word, wordlist)
