@@ -1,6 +1,6 @@
 require 'socket'
 
-client = TCPSocket.new('localhost', 45678)
+client = TCPSocket.new('10.0.1.76', 45678)
 
 def is_session_new? client
   #puts 'checking if session is new'
