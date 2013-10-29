@@ -3,7 +3,7 @@ require 'socket'
 client = TCPSocket.new('localhost', 45678)
 
 def is_session_new? client
-  puts 'checking if session is new'
+  #puts 'checking if session is new'
   return client.gets.chomp == 'new_session'
 end
 
@@ -41,12 +41,6 @@ def get_board_size_client client
   client.gets.chomp.to_i
 end
 
-# def get_letter_set_client client
-#   letter_set = JSON.parse client.readpartial(512)
-#   print 'letter_set == Array? '
-#   puts letter_set.kind_of?(Array)
-# end
-
 def display_game_board client, board_size
   puts 'Available letters: '
   for i in 0...board_size*board_size
@@ -81,17 +75,15 @@ def play_game client
   enter_name client
   #print 'Do you wish to start a multiplayer game, yes/no? '
   if is_session_new? client
-    puts 'session is new'
+    #puts 'session is new'
     if multiplayer != 'no'
-      puts 'multiplayer = yes'
       num_players = enter_num_players client
     else
-      puts 'multiplayer = no'
       num_players = 1
     end
     enter_board_size client
   end
-  puts 'Waiting for other players...'
+  puts 'Waiting for other players...' if num_players > 1
   while true
     break if client.gets.chomp == 'true' #break if player limit reached
   end
@@ -114,8 +106,6 @@ def play_game client
       puts 'Sorry! You are out of time..!'
       puts client.gets.chomp
     end
-      # rescue Errno::ECONNRESET
-      #   puts 'Sorry! You are out of time!'
   end
 end
 play_game client

@@ -2,9 +2,6 @@
 require_relative 'session.rb'
 require_relative 'bobble_utils.rb'
 
-#####################################################################
-#Use gets and puts on connection to communicate with client
-#####################################################################
 
 class Player
   attr_accessor :name, :score, :thread, :session, :word_score
