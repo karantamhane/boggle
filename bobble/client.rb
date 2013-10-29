@@ -74,6 +74,7 @@ def play_game client
 
   enter_name client
   #print 'Do you wish to start a multiplayer game, yes/no? '
+  num_players = 0
   if is_session_new? client
     #puts 'session is new'
     if multiplayer != 'no'
