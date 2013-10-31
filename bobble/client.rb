@@ -59,22 +59,21 @@ def send_word_to_server client
 end
 
 def play_game client
+  puts 'Starting game...'
+  print client.gets.chomp + ' '
   begin
-    puts client.gets.chomp
     multiplayer = gets.chomp
     unless ['yes', 'no'].include? multiplayer
       raise Errno
     end
   rescue
     puts 'Please enter yes or no.'
-    multiplayer = gets.chomp
     retry
   end
   client.puts multiplayer
 
   enter_name client
   #print 'Do you wish to start a multiplayer game, yes/no? '
-  num_players = 0
   if is_session_new? client
     #puts 'session is new'
     if multiplayer != 'no'
@@ -84,7 +83,7 @@ def play_game client
     end
     enter_board_size client
   end
-  puts 'Waiting for other players...' if num_players > 1
+  puts 'Waiting for other players...' if multiplayer == 'yes'
   while true
     break if client.gets.chomp == 'true' #break if player limit reached
   end

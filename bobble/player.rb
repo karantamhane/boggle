@@ -55,6 +55,7 @@ class Player
         self.session.create_game self.get_board_size conn
         #self.session.game.board.display
       else
+        puts 'sending nope'
         conn.puts 'nope'
       end
 
