@@ -59,7 +59,7 @@ class Player
         conn.puts 'nope'
       end
 
-      until self.session.player_limit_reached?
+      until self.session.player_limit_reached? && self.session.players.last.name
         sleep 2
       end
       conn.puts true #signalling client that player limit reached
