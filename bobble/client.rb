@@ -1,6 +1,8 @@
 require 'socket'
 
-client = TCPSocket.new('10.0.1.76', 45678)
+print "Please enter server IP: "
+client_ip = gets.chomp
+client = TCPSocket.new(client_ip, 45678)
 
 def is_session_new? client
   #puts 'checking if session is new'
@@ -58,7 +60,7 @@ def send_word_to_server client
   client.puts gets
 end
 
-def play_game client
+def play_game client, client_ip
   puts 'Starting game...'
   print client.gets.chomp + ' '
   begin
@@ -108,7 +110,7 @@ def play_game client
     end
   end
 end
-play_game client
+play_game client, client_ip
 
 
 
