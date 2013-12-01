@@ -2,7 +2,6 @@ Bobble
 
 A multiplayer word game - Make words horizontally, vertically, diagonally in any pattern from a given grid of letters!
 * *Some bug fixes for multiplayer games coming soon!*
-* *Instructions for Windows users coming soon..!*
 
 Execution instructions - 
 
