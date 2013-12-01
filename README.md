@@ -5,7 +5,7 @@ A multiplayer word game - Make words horizontally, vertically, diagonally in any
 
 Execution instructions - 
 
-* Clone the repo by running 'git clone http://github.com/karantamhane/boggle.git'
+* Clone the repo at 'http://github.com/karantamhane/boggle.git'
 * Change directory to the repo directory
 * Start the server by running 'ruby server.rb' in the terminal
 * Play the game by running 'ruby client.rb' in the terminal (for each player)
