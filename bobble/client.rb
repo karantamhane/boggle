@@ -1,7 +1,8 @@
 require 'socket'
 
-print "Please enter server IP: "
-client_ip = gets.chomp
+# print "Please enter server IP: "
+# client_ip = gets.chomp
+client_ip = "54.201.98.211"
 client = TCPSocket.new(client_ip, 45678)
 
 def is_session_new? client
