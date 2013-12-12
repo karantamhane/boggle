@@ -14,3 +14,4 @@ Requirements -
 * Access to a Unix-based terminal required.
 * Computer must have Ruby 2.0 installed.
 * Network connection required for multiplayer games.
+* Access to server inet IP address required.
