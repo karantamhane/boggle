@@ -62,7 +62,7 @@ class Player
       start_waiting = Time.now
       until self.session.player_limit_reached? && self.session.players.last.name
         puts Time.now - start_waiting
-        if Time.now - start_waiting >= 5
+        if Time.now - start_waiting >= 30
           self.session.abandoned = true
           conn.puts 'Idle session timed out. Disconnecting from server..'
           Thread.current.kill
