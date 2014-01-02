@@ -59,7 +59,14 @@ class Player
         conn.puts 'nope'
       end
 
+      start_waiting = Time.now
       until self.session.player_limit_reached? && self.session.players.last.name
+        puts Time.now - start_waiting
+        if Time.now - start_waiting >= 5
+          self.session.abandoned = true
+          conn.puts 'Idle session timed out. Disconnecting from server..'
+          Thread.current.kill
+        end
         sleep 2
       end
       conn.puts true #signalling client that player limit reached

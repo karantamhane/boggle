@@ -2,7 +2,8 @@ require 'socket'
 
 # print "Please enter server IP: "
 # client_ip = gets.chomp
-client_ip = "54.201.147.63"
+# client_ip = "54.201.147.63"
+client_ip = '0.0.0.0'
 
 client = TCPSocket.new(client_ip, 45678)
 
@@ -88,8 +89,15 @@ def play_game client, client_ip
     enter_board_size client
   end
   puts 'Waiting for other players...' if multiplayer == 'yes'
+  start_waiting = Time.now
   while true
-    break if client.gets.chomp == 'true' #break if player limit reached
+    initializer = client.gets.chomp
+    if initializer == 'true' #break if player limit reached
+      break
+    else
+      puts initializer
+      client.close
+    end
   end
   board_size = get_board_size_client client
 

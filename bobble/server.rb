@@ -12,7 +12,7 @@ def start_server
     player = Player.new
     connection.puts 'Do you wish to start a multiplayer game, yes/no?'
     multiplayer = connection.gets.chomp
-    if sessions.empty? || multiplayer == 'no' || sessions.last.player_limit_reached?
+    if sessions.empty? || multiplayer == 'no' || sessions.last.player_limit_reached? || sessions.last.abandoned?
       session = Session.new player
       session.num_players = 1 if multiplayer == 'no'
       sessions << session if multiplayer != 'no'

@@ -2,11 +2,12 @@ require_relative 'game.rb'
 require_relative 'player.rb'
 
 class Session
-  attr_accessor :players, :num_players, :game
+  attr_accessor :players, :num_players, :game, :abandoned
   def initialize player
     @players = [player]
     @num_players = nil
     @game = nil
+    @abandoned = false
     @wordlist = load_words('words.txt')
   end
 
@@ -24,6 +25,10 @@ class Session
 
   def create_game board_size
     @game = Game.new board_size
+  end
+
+  def abandoned?
+    return self.abandoned
   end
 
   def start conn
